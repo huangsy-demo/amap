@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+<style type="text/css">
+body, html, #container {
+	height: 100%;
+	margin: 0px;
+}
+#weather {
+    height: 180px;
+    background-color: #fff;
+    padding-left: 10px;
+    padding-right: 10px;
+    position: absolute;
+    bottom: 20px;
+    font-size: 12px;
+    right: 10px;
+    border-radius: 3px;
+    line-height: 20px;
+    border: 1px solid #ccc;
+}
+.weather{
+    width: 60px;
+    padding-left: 8px;
+    display: inline-block;
+}
+#tip {
+    background-color: #fff;
+    padding-left: 10px;
+    padding-right: 10px;
+    position: absolute;
+    font-size: 12px;
+    right: 10px;
+    top: 20px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    line-height: 30px;
+}
+</style>
+<title>快速入门</title>
+</head>
+<body>
+	<div id="container"></div>
+	<div id="tip" style="line-height: 24px"></div>
+	<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.0&key=e026011068c938653d1d5cd8664db10c&plugin=AMap.Geocoder"></script>
+	<script src="https://webapi.amap.com/ui/1.0/main.js"></script>
+	<script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+	<script type="text/javascript">
+		//初始化地图
+		var map = new AMap.Map('container', {
+			mapStyle : 'amap://styles/e9b799136a0ce06fb2ab190cf024dd6b',//样式URL
+			resizeEnable : true,
+			zoom : 10,
+			center : [ 116.480983, 40.0958 ]
+		});
+		regeocoder([ 116.480983, 40.0958 ]);
+		//通过逆地理编码获得的adcode
+		//var regeoAdcode;
+		//逆地理编码
+		function regeocoder(lnglatXY) {
+		    var geocoder = new AMap.Geocoder({
+		        radius: 1000,
+		        extensions: "all"
+		    });        
+		    geocoder.getAddress(lnglatXY, function(status, result) {
+		        if (status === 'complete' && result.info === 'OK') {
+		            geocoder_CallBack(result);
+		        }
+		    });
+		}
+		function geocoder_CallBack(data) {
+		    var adcode = data.regeocode.addressComponent.adcode; //返回adcode
+//		    console.log(data);
+		    regeoAdcode = adcode;
+		    console.log(regeoAdcode);
+		    
+		}
+		//添加服务
+		/* AMap.service('AMap.Weather', function() {
+	        var weather = new AMap.Weather();
+	        //查询实时天气信息, 查询的城市到行政级别的城市，如朝阳区、杭州市
+	        weather.getLive('朝阳区', function(err, data) {
+	            if (!err) {
+	                var str = [];
+	                str.push('<div style="color: #3366FF;">实时天气' + '</div>');
+	                str.push('<div>城市/区：' + data.city + '</div>');
+	                str.push('<div>天气：' + data.weather + '</div>');
+	                str.push('<div>温度：' + data.temperature + '℃</div>');
+	                str.push('<div>风向：' + data.windDirection + '</div>');
+	                str.push('<div>风力：' + data.windPower + ' 级</div>');
+	                str.push('<div>空气湿度：' + data.humidity + '</div>');
+	                str.push('<div>发布时间：' + data.reportTime + '</div>');
+	                var marker = new AMap.Marker({map: map, position: map.getCenter()});
+	                var infoWin = new AMap.InfoWindow({
+	                    content: str.join(''),
+	                    offset: new AMap.Pixel(0, -20)
+	                });
+	                infoWin.open(map, marker.getPosition());
+	                marker.on('mouseover', function() {
+	                    infoWin.open(map, marker.getPosition());
+	                });
+	            }
+	        });
+	        //未来4天天气预报
+	        weather.getForecast('朝阳区', function(err, data) {
+	            if (err) {return;}
+	            var str = [];
+	            for (var i = 0,dayWeather; i < data.forecasts.length; i++) {
+	                dayWeather = data.forecasts[i];
+	                str.push(dayWeather.date+' <div class="weather">'+dayWeather.dayWeather+'</div> '+ dayWeather.nightTemp + '~' + dayWeather.dayTemp + '℃');
+	            }
+	            document.getElementById('tip').innerHTML = str.join('<br>');
+	        });
+	    }); */
+		
+		//添加标记
+		/* var marker = new AMap.Marker({
+			position : [ 116.480983, 39.989628 ],//marker所在的位置
+			map : map//创建时直接赋予map属性
+		}); */
+		//添加插件
+		/* AMap.plugin([ 'AMap.ToolBar', 'AMap.AdvancedInfoWindow' ], function() {
+			//创建并添加工具条控件
+			var toolBar = new AMap.ToolBar();
+			map.addControl(toolBar);
+			//创建高级信息窗体并在指定位置打开
+			var infowindow = new AMap.AdvancedInfoWindow(
+					{
+						content : '<div class="info-title">高德地图</div><div class="info-content">'
+								+ '<img src="http://webapi.amap.com/images/amap.jpg">'
+								+ '高德是中国领先的数字地图内容、导航和位置服务解决方案提供商。<br>'
+								+ '<a target="_blank" href="http://mobile.amap.com/">点击下载高德地图</a></div>',
+						offset : new AMap.Pixel(0, -30)
+					});
+			infowindow.open(map, [ 116.480983, 39.989628 ]);
+		}); */
+		//添加组件
+		//引入SimpleMarker，loadUI的路径参数为模块名中 'ui/' 之后的部分
+		/* AMapUI.loadUI(['overlay/SimpleMarker'], function(SimpleMarker) {
+		    //启动页面
+		    initPage(SimpleMarker);
+		});
+
+		function initPage(SimpleMarker) {
+
+		    //创建SimpleMarker实例
+		    new SimpleMarker({
+
+		        //前景文字
+		        iconLabel: 'A',
+
+		        //图标主题
+		        iconTheme: 'default',
+
+		        //背景图标样式
+		        iconStyle: 'red',
+
+		        //...其他Marker选项...，不包括content
+		        map: map,
+		        position: [116.405285, 39.904989]
+		    });
+
+		    //创建SimpleMarker实例
+		    new SimpleMarker({
+		        //前景文字
+		        iconLabel: {
+		            innerHTML: '<i>B</i>', //设置文字内容
+		            style: {
+		                color: '#fff' //设置文字颜色
+		            }
+		        },
+
+		        //图标主题
+		        iconTheme: 'fresh',
+		        //背景图标样式
+		        iconStyle: 'black',
+
+		        //...其他Marker选项...，不包括content
+		        map: map,
+		        position: [116.305285, 39.904989]
+		    });
+		} */
+		//加载DistrictExplorer，loadUI的路径参数为模块名中 'ui/' 之后的部分 
+		/* AMapUI.loadUI(['geo/DistrictExplorer'], function(DistrictExplorer) {
+		   //启动页面
+		   initPage(DistrictExplorer);
+		});
+
+		function initPage(DistrictExplorer) {
+		   //创建一个实例
+		   var districtExplorer = new DistrictExplorer({
+		      map: map //关联的地图实例
+		   });
+
+		   //var adcode = 100000; //全国的区划编码
+		   var adcode = 440300; //广东的区划编码
+		   
+		   districtExplorer.loadAreaNode(adcode, function(error, areaNode) {
+
+		      if (error) {
+		         console.error(error);
+		         return;
+		      }
+		      
+		      console.log(areaNode.getAdcode());
+		      console.log(areaNode.getBounds());
+		      console.log(areaNode.getIdealZoom());
+
+		      //绘制载入的区划节点
+		      renderAreaNode(districtExplorer, areaNode);
+		   });
+		}
+
+		function renderAreaNode(districtExplorer, areaNode) {
+
+		   //清除已有的绘制内容
+		   districtExplorer.clearFeaturePolygons();
+
+		   //just some colors
+		   var colors = ["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00"];
+
+		   //绘制子级区划
+		   districtExplorer.renderSubFeatures(areaNode, function(feature, i) {
+
+		      var fillColor = colors[i % colors.length];
+		      //var strokeColor = colors[colors.length - 1 - i % colors.length];
+			  var strokeColor = 'green';
+		      
+		      return {
+		         cursor: 'default',
+		         bubble: true,
+		         strokeColor: strokeColor, //线颜色
+		         strokeOpacity: 1, //线透明度
+		         strokeWeight: 1, //线宽
+		         fillColor: fillColor, //填充色
+		         fillOpacity: 0.35, //填充透明度
+		      };
+		   });
+
+		   //绘制父级区划，仅用黑色描边
+		   districtExplorer.renderParentFeature(areaNode, {
+		      cursor: 'default',
+		      bubble: true,
+		      strokeColor: 'black', //线颜色
+		      fillColor: null,
+		      strokeWeight: 3, //线宽
+		   });
+
+		   //更新地图视野以适合区划面
+		   map.setFitView(districtExplorer.getAllFeaturePolygons());
+		} */
+	</script>
+</body>
+</html>

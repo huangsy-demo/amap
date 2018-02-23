@@ -1,0 +1,71 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<!--重要meta, 必须!-->
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,shrink-to-fit=no" name="viewport" />
+<title>SUBWAY</title>
+</head>
+<body>
+	<div id="mysubway"></div>
+	<script src="http://webapi.amap.com/subway?v=1.0&key=e026011068c938653d1d5cd8664db10c&callback=cbk"></script>
+	<script type="text/javascript">
+		//开启easy模式, 直接完成地铁图基本功能, 无需自己写交互
+		window.cbk = function() {
+			var mysubway = subway("mysubway", {
+				adcode: 4401 //城市的adcode
+			});
+			//输出有地铁的城市的信息
+			mysubway.getCityList(function(data) {
+				console.log(data);
+			});
+			/* mysubway.event.on("subway.complete", function () {//地铁图加载完成之后才能获取到站点信息
+				var start = '虎门火车站', end = '陈屋';
+				mysubway.addInfoWindow(start);
+				//mysubway.route(start, end);//规划路线
+				//mysubway.setStart(start);//标注起点
+				//mysubway.setEnd(end);//标注终点
+				mysubway.showLine('2号线');
+			}); */
+			//点击站点，显示此站点的信息窗体
+	        mysubway.event.on("station.touch", function(ev, info) {
+	            var id = info.id;
+	            mysubway.stopAnimation();
+	            mysubway.addInfoWindow(id, {});
+	            var center = mysubway.getStCenter(id);
+	            mysubway.setCenter(center);
+	        });
+	      	//点击空白, 关闭infowindow
+	        mysubway.event.on("subway.touch", function() {
+	        	mysubway.clearInfoWindow();
+	        });
+	      	//设置起点
+	        mysubway.event.on("startStation.touch", function(ev, info) {
+	        	mysubway.stopAnimation();
+	        	mysubway.clearInfoWindow();
+	        	mysubway.setStart(info.id, {});
+	            startInfo = info;
+	            route();
+	        });
+
+	        //设置终点
+	        mysubway.event.on("endStation.touch", function(ev, info) {
+	        	mysubway.stopAnimation();
+	        	mysubway.clearInfoWindow();
+	        	mysubway.setEnd(info.id, {});
+	            endInfo = info;
+	            route();
+	        });
+	      	//路线规划
+	        var startInfo = {},
+	            endInfo = {};
+	        function route() {
+	            if (startInfo.id && endInfo.id) {
+	            	mysubway.route(startInfo.id, endInfo.id, {});
+	                startInfo = {};
+	                endInfo = {};
+	            }
+	        }
+		};
+	</script>
+</body>
+</html>
